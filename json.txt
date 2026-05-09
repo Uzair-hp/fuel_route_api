@@ -1,0 +1,10 @@
+{
+  "start": "New York, NY",
+  "destination": "Los Angeles, CA"
+}
+
+
+{
+  "start": "Houston, TX",
+  "destination": "El Paso, TX"
+}
