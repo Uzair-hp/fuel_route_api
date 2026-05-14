@@ -153,6 +153,32 @@ http://127.0.0.1:8000/api/docs/
 * Local memory caching
 * Preprocessed fuel datasets
 
+## 🐳 Docker Setup
+
+### Option 1: Run from DockerHub (Quickest)
+You can pull and run the pre-built image directly from DockerHub:
+
+1. Pull the image:
+   ```bash
+   docker pull ujer01/fuel-route-api
+   ```
+2. Run the container:
+   ```bash
+   docker run -d -p 8000:8000 ujer01/fuel-route-api
+   ```
+
+### Option 2: Run Locally with Docker Compose
+If you want to build the image from source and run it locally:
+
+1. Build and start the containers:
+   ```bash
+   docker compose up --build
+   ```
+2. To run the containers in the background (detached mode):
+   ```bash
+   docker compose up -d
+   ```
+
 ---
 
 ## 📂 Project Structure

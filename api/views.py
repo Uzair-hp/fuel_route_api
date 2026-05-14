@@ -13,6 +13,8 @@ def health_check(request):
 
 
 class FuelRouteView(APIView):
+    serializer_class = RouteRequestSerializer
+
     def post(self, request):
         serializer = RouteRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -25,29 +27,30 @@ class FuelRouteView(APIView):
         if cached_response is not None:
             return Response(cached_response)
 
-        routing_service = RoutingService()
-        optimizer = FuelOptimizer()
+        try:
+            routing_service = RoutingService()
+            optimizer = FuelOptimizer()
 
-        start_coords = routing_service.get_coordinates(start)
-        end_coords = routing_service.get_coordinates(destination)
-        route_data = routing_service.get_route(start_coords, end_coords)
+            start_coords = routing_service.get_coordinates(start)
+            end_coords = routing_service.get_coordinates(destination)
+            route_data = routing_service.get_route(start_coords, end_coords)
 
-        stops, total_cost = optimizer.calculate_stops(
-            route_data["geometry"],
-            route_data["distance_miles"],
-        )
+            stops, total_cost = optimizer.calculate_stops(
+                route_data["geometry"],
+                route_data["distance_miles"],
+            )
 
-        response_data = {
-            "start": start,
-            "destination": destination,
-            "total_distance_miles": round(route_data["distance_miles"], 2),
-            "estimated_gallons": round(route_data["distance_miles"] / optimizer.mpg, 2),
-            "total_fuel_cost": round(total_cost, 2),
-            "fuel_stops": stops,
-            "route_geometry": route_data["geometry"],
-        }
+            response_data = {
+                "start": start,
+                "destination": destination,
+                "total_distance_miles": round(route_data["distance_miles"], 2),
+                "estimated_gallons": round(route_data["distance_miles"] / optimizer.mpg, 2),
+                "total_fuel_cost": round(total_cost, 2),
+                "fuel_stops": stops,
+                "route_geometry": route_data["geometry"],
+            }
 
-        cache.set(cache_key, response_data, 60 * 60 * 24)
-        return Response(response_data)
-
-
+            cache.set(cache_key, response_data, 60 * 60 * 24)
+            return Response(response_data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
